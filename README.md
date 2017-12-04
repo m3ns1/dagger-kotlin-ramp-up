@@ -122,9 +122,9 @@ is done somewhere in our custom Application class.
 
 Kotlin has a nice feature called `Extension Functions`. With those functions you
 can add new features to existing classes. So the idea now is to write some extension
-functions that will setup dagger correctly and we can use those extension functions in
-through out our application (activities/fragments etc.) and we can use this extensions
-in any other project (maybe we can use this later as library in other projects instead
+functions that will setup dagger correctly and we can use those extension functions through 
+out our application (activities/fragments etc.) and we can use this extensions
+in any other project (maybe we can use this later as a library in other projects instead
 of copy-pasting it along new projects)
 
 ## Boiler-plate code with Kotlin
@@ -174,8 +174,47 @@ class MApplication : Application() {
 
 
 
-class MainActivity : Activity {
+class MActivity : Activity(), FragmentCallback {
+    @Inject
+    @field:Named(Names.APPLICATION_VERSION)
+    lateinit var appVersion: String
 
+    override val hostActivity: Activity
+        get() = this
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        component().inject(this)
+        if (savedInstanceState == null) {
+            // load the example fragment inside content
+            fragmentManager.beginTransaction()
+                    .add(R.id.content, MFragment.newFragment(), MFragment.fqn())
+                    .commit()
+        }
+    }
+}
+
+class MFragment : Fragment() {
+
+    companion object {
+        fun newFragment(): Fragment {
+            return MFragment()
+        }
+    }
+
+    @Inject
+    @field:Named(Names.APPLICATION_VERSION)
+    lateinit var appVersion: String
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is FragmentCallback) {
+            componentWithin(context)?.inject(this)
+        }
+    }
 }
 
 ```
+
+That's it
