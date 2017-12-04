@@ -2,6 +2,7 @@ package com.m3ns1.rampup
 
 import android.app.Activity
 import android.app.Application
+import android.app.Fragment
 import android.content.Context
 
 /**
@@ -35,4 +36,4 @@ fun Context.component(): ActivityComponent {
 /**
  * Get a new [FragmentComponent] for this [FragmentCallback] resp. from its host activity
  */
-fun android.app.Fragment.componentWithin(callback: Context?): FragmentComponent? = callback?.component()?.fragmentComponentBuilder()?.with(FragmentModule(this))?.build()
+fun Fragment.componentWithin(callback: Context?): FragmentComponent? = callback?.component()?.fragmentComponentBuilder()?.with(FragmentModule(this))?.build()
