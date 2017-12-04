@@ -100,6 +100,9 @@ class FragmentModule(val view: Fragment) {
 
 }
 
+/**
+ * A callback for fragments
+ */
 interface FragmentCallback {
     val hostActivity: Activity
 }

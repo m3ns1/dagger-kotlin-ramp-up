@@ -10,13 +10,10 @@ import javax.inject.Named
 /**
  * Created by m3ns1 on 03.12.17.
  */
-class MActivity : Activity(), FragmentCallback {
+class MActivity : Activity() {
     @Inject
     @field:Named(Names.APPLICATION_VERSION)
     lateinit var appVersion: String
-
-    override val hostActivity: Activity
-        get() = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

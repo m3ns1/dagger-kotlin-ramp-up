@@ -135,23 +135,27 @@ project and which should work in any Dagger/Kotlin project without any modificat
 /**
  * Get the [AppComponent] for this application with the [AppModule]
  */
-fun Application.withComponent(): AppComponent {
+fun Context.withComponent(): AppComponent {
     return DaggerAppComponent.builder()
-            .appModule(AppModule(this))
+            .appModule(AppModule(this as Application))
             .build()
 }
 
 /**
  * Get the [ActivityComponent] that belongs to this activity
  */
-fun Activity.component(): ActivityComponent {
-    return this.application.withComponent().activityComponentBuilder().with(ActivityModule(this)).build()
+fun Context.component(): ActivityComponent {
+    if (this is Activity) {
+        return this.application.withComponent().activityComponentBuilder().with(ActivityModule(this)).build()
+    } else {
+        throw IllegalArgumentException("You must call this from an activity")
+    }
 }
 
 /**
  * Get a new [FragmentComponent] for this [FragmentCallback] resp. from its host activity
  */
-fun Fragment.componentWithin(callback: FragmentCallback?): FragmentComponent? = callback?.hostActivity?.component()?.fragmentComponentBuilder()?.with(FragmentModule(this))?.build()
+fun android.app.Fragment.componentWithin(callback: Context?): FragmentComponent? = callback?.component()?.fragmentComponentBuilder()?.with(FragmentModule(this))?.build()
 ```
 
 ## How-to use
@@ -174,13 +178,10 @@ class MApplication : Application() {
 
 
 
-class MActivity : Activity(), FragmentCallback {
+class MActivity : Activity() {
     @Inject
     @field:Named(Names.APPLICATION_VERSION)
     lateinit var appVersion: String
-
-    override val hostActivity: Activity
-        get() = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,9 +210,7 @@ class MFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is FragmentCallback) {
-            componentWithin(context)?.inject(this)
-        }
+        componentWithin(context)?.inject(this)
     }
 }
 

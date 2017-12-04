@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.m3ns1.rampup.FragmentCallback
 import com.m3ns1.rampup.Names
 import com.m3ns1.rampup.R
 import com.m3ns1.rampup.componentWithin
@@ -31,9 +30,7 @@ class MFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is FragmentCallback) {
-            componentWithin(context)?.inject(this)
-        }
+        componentWithin(context)?.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
